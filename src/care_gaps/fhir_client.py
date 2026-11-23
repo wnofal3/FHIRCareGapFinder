@@ -1,6 +1,9 @@
 import requests
+from dotenv import load_dotenv
 
-BASE_URL = "http://localhost:8080/fhir"
+load_dotenv()  # Load environment variables from .env file
+
+BASE_URL = os.environ["FHIR_BASE_URL"]
 DIABETES_CODE = "http://snomed.info/sct|44054006"
 A1C_CODE = "http://loinc.org|4548-4"
 
@@ -72,7 +75,6 @@ class FhirClient:
     def get_a1c_results(self) -> list[dict]:
         # search Observation by A1C_CODE
         # return [{"patient_id", "date", "value", "unit"}, ...]
-        # watch out: some fields may be missing, so use .get()
         a1c_results = []
         resource_type, params = "Observation", {"code": A1C_CODE, "_count": 100}
 
