@@ -1,6 +1,7 @@
 from care_gaps.fhir_client import FhirClient
 from care_gaps import db
 from care_gaps import care_gaps
+from care_gaps import export
 
 def main():
     client = FhirClient()
@@ -18,6 +19,9 @@ def main():
         
         for gap in gaps:
             print(f"Patient {gap["patient_id"]}: Last A1C: {gap["last_a1c"].date() if gap["last_a1c"] else 'None'}")
+
+        # export to CSV
+        export.write_care_gaps_csv(gaps)
 
 
     print(f"Saved {len(patient_ids)} diabetic patients and {len(a1c_results)} A1C results to the database.")
