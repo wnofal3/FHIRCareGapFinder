@@ -1,18 +1,21 @@
 import json
+import os
 from pathlib import Path
 import requests
+from dotenv import load_dotenv
 
 # parent script directory -> working directory
 SCRIPT_DIR = Path(__file__).resolve().parents[2]
 
-BASE_URL = "http://localhost:8080/fhir"
+load_dotenv()
+
+BASE_URL = os.environ["FHIR_BASE_URL"]
 DATA_DIR = SCRIPT_DIR / Path("data/synthea_sample_data_fhir_latest")
 HEADERS = {"Content-Type": "application/fhir+json"}
 
 def post_bundle(path: Path) -> bool:
     bundle = json.loads(path.read_text(encoding="utf-8"))
 
-    # TODO: POST the bundle to BASE_URL (not /Patient), with headers and a timeout (completed)
     try:
         response = requests.post(BASE_URL, json=bundle, headers=HEADERS, timeout=60)
 
@@ -25,7 +28,6 @@ def post_bundle(path: Path) -> bool:
         print(f"File path: {path.name}")
         return False
 
-    # TODO: return True on a 200, otherwise print the status and the first 300 chars of the response (completed)
     return True # handled false cases in try/except block
 
 def main():

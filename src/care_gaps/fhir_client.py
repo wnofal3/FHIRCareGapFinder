@@ -11,8 +11,6 @@ A1C_CODE = "http://loinc.org|4548-4"
 
 class FhirClient:
     def __init__(self, base_url: str = BASE_URL, timeout: int = 30):
-        # store base_url and timeout
-        # create a requests.Session and set the Accept header to application/fhir+json
         self.base_url = base_url
         self.timeout = timeout
         self.session = requests.Session()
@@ -23,15 +21,8 @@ class FhirClient:
 
     def _search(self, resource_type: str, params: dict):
         """Yield every resource across all pages of a search."""
-        # 1. build the first URL from base_url + resource_type, and send params
         url = f"{self.base_url}/{resource_type}"
 
-        # 2. loop:
-                #      GET the URL, raise on bad status, parse the JSON Bundle
-                #      for each item in bundle.get("entry", []): yield item["resource"]
-                #      find the link whose "relation" is "next"
-                #      if none, stop; otherwise set url to its "url" and clear params
-                #      (the next link already has the query baked in)
         while url:
             try:
                 response = self.session.get(url, params=params, timeout=self.timeout)
@@ -40,7 +31,6 @@ class FhirClient:
                 response.raise_for_status()
 
                 bundle = response.json()
-                # print(bundle)
 
             except requests.exceptions.HTTPError as http_err:
                 print(f"HTTP error occurred: {http_err} (Status code: {response.status_code})")
@@ -98,7 +88,6 @@ class FhirClient:
 
 
 if __name__ == "__main__":
-    # quick manual check: print how many diabetic patients and how many A1c results
     client = FhirClient()
     diabetic_patients = client.get_diabetic_patient_ids()
     a1c_results = client.get_a1c_results()
